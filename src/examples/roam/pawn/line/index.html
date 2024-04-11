@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="../../../../js/earthsdk.js"></script>
+    <!-- 面板的样式放到css文件内 -->
+    <link rel="stylesheet" href="../../../../css/example1.css">
+    <title>Cesium地球初始化</title>
+    <style>
+        html,
+        body,
+        #app {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        .btn {
+            display: grid;
+            grid-template-columns: 1fr;
+            align-items: center;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <div id="panel">
+        <div class="btn">
+            <button onclick="toLine()">沿线运动</button>
+            <button onclick="toMap()">地图模式</button>
+            <button onclick="edtingLine()">编辑路径</button>
+        </div>
+    </div>
+    <script>
+
+        // Vue中引入方式：import { ESObjectsManager } from 'esobjs-xe2-plugin/dist-node/esobjs-xe2-plugin-main';
+
+        const { ESObjectsManager } = XE2['esobjs-xe2-plugin-main']
+        const objm = new ESObjectsManager();
+        window.g_objm = objm;
+
+        // 创建Cesium视口
+        const viewer = objm.createCesiumViewer({
+            "domid": document.getElementById("app")
+        })
+
+        // 监听视口状态
+        viewer.statusChanged.don(status => {
+            if (status == 'Created') {
+                viewer.flyIn([
+                    118.14698887033396,
+                    41.329742191381555,
+                    12476.12225690222
+                ], [
+                    351.54912478047135,
+                    -35.65680592184432,
+                    359.9697087089072
+                ], 3)
+            }
+        })
+        // 通过json创建一个影像图层
+        const imageryLayer = objm.createSceneObjectFromJson({
+            "id": "9812a65f-0de0-4f7b-b234-809c0c2fb8ef",
+            "type": "ESImageryLayer",
+            "url": "https://webmap.giiiis.com/maps/vt?lyrs=s&x={x}&y={y}&z={z}"
+        });
+
+        /**---------------------------------沿线运动-----------------------------------**/
+        /**
+         * 沿线运动怎么实现？
+         * 1. 创建一个ESGeoLineString对象
+         * 2. 设置路径点
+         * 3. 调用当前视口下的changeToLine方法实现运动
+         * */
+        const { ESGeoLineString } = XE2['esobjs-xe2-plugin-main']
+        const sceneObject = objm.createSceneObjectFromJson({
+            "id": "9dc8d658-6287-4913-934a-06e1e8d6e22c",
+            "type": "ESGeoLineString",
+            "name": "ESGeoLineString_9dc8",
+            "allowPicking": true,
+            "points": [
+                [
+                    118.2170787683231,
+                    41.4910779588614,
+                    0
+                ],
+                [
+                    118.1058471935423,
+                    41.41459535219511,
+                    0
+                ],
+                [
+                    118.0857440297243,
+                    41.4781306506352,
+                    0
+                ],
+            ]
+        })
+        /**
+         * 参数(折线id，运动速度，抬高高度，是否循环)
+        */
+        function toLine() {
+            objm.activeViewer.changeToLine('9dc8d658-6287-4913-934a-06e1e8d6e22c', 1, 3, false)
+
+        }
+        // 编辑路径
+        function edtingLine() {
+            sceneObject.editing = true
+        }
+        function toMap() {
+            objm.activeViewer.changeToMap()
+
+        }
+    </script>
+    <!-- 切换UE和Cesium引擎的组件（Vue） -->
+    <div id="root">
+        <switch-engine :objm="objm"></switch-engine>
+    </div>
+    <!-- Vue文件 -->
+    <script src="../../../../js/vue.global.js"></script>
+    <!-- 切换UE和Cesium的组件 -->
+    <script src="../../../../js/switchEngineCom.js"></script>
+</body>
+
+</html>

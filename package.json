@@ -1,0 +1,36 @@
+{
+    "name": "template2-vue3-xe2-ts",
+    "description": "使用xe2创建一个cesium版地球，并且演示响应式属性如何使用",
+    "version": "0.1.0",
+    "private": false,
+    "gituri": "https://codeup.aliyun.com/xbsj/2022/earthsdk2-demos-202211/commit/${commitId}",
+    "owner": "北京西部世界科技有限公司",
+    "scripts": {
+        "serve": "vue-cli-service serve",
+        "build": "vue-cli-service build",
+        "lint": "vue-cli-service lint"
+    },
+    "dependencies": {
+        "vue": "^3.2.13",
+        "axios": "^1.6.7",
+        "monaco-editor": "^0.30.1",
+        "monaco-editor-webpack-plugin": "^6.0.0",
+        "esobjs-xe2-plugin": "0.1.50",
+        "vue-xe2-plugin": "^0.1.5"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "^5.4.0",
+        "@typescript-eslint/parser": "^5.4.0",
+        "@vue/cli-plugin-eslint": "~5.0.0",
+        "@vue/cli-plugin-typescript": "~5.0.0",
+        "@vue/cli-service": "~5.0.0",
+        "@vue/eslint-config-typescript": "^9.1.0",
+        "copy-webpack-plugin": "^5.0.4",
+        "eslint": "^7.32.0",
+        "eslint-plugin-vue": "^8.0.3",
+        "ncp": "^2.0.0",
+        "npm": "^8.9.0",
+        "rimraf": "^3.0.2",
+        "typescript": "~4.5.5"
+    }
+}

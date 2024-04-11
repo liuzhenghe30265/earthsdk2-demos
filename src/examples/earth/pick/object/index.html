@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="../../../../js/earthsdk.js"></script>
+    <!-- 自定义Css样式 -->
+    <link rel="stylesheet" href="../../../../css/example1.css">
+    <title>拾取对象pick</title>
+    <style>
+        html,
+        body,
+        #app {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+
+        #box {
+            height: 100px;
+            text-align: center;
+        }
+
+        #box>p {
+            text-align: left;
+        }
+
+        #box>p:nth-child(1)>span {
+            color: sandybrown;
+        }
+
+        #box>p:nth-child(2),
+        #box>p:nth-child(3) {
+            padding-left: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <div id="panel">
+        <div id="box">
+            <p><span>提示：</span>打开控制台</p>
+            <p>1、点击楼宇，查看返回值</p>
+            <p>2、点击空白区域，查看返回值</p>
+        </div>
+    </div>
+    <script>
+        /** ---------------------------------地球创建------------------------------------**/
+
+        // Vue中引入方式：import { ESObjectsManager } from 'esobjs-xe2-plugin/dist-node/esobjs-xe2-plugin-main';
+
+        const { ESObjectsManager } = XE2['esobjs-xe2-plugin-main']
+        const objm = new ESObjectsManager();
+        window.g_objm = objm;
+
+        // 监听视口创建完成事件
+        objm.viewerCreatedEvent.don((viewer) => {
+            /**
+             * 
+             * pick(screenPosition, attachedInfo, parentInfo)：异步拾取参数像素点位置处的三维信息
+             *  参数1：screenPosition 像素点位置
+             *  参数2：attachedInfo 附加信息，【可选，默认undefined】
+             *  参数3：parentInfo 拾取后信息是否包含父节点信息，UE视口生效，cesium不生效 【可选，默认false】
+             * 
+             *  返回值：
+             *  Promise对象
+             * 
+             * 目前pick事件UE和Cesium返回值会有区分，暂时未统一  
+             *     UE会返回拾取到的ES对象的id,用来全局统一监听所有对象pick,不用每个对象单独去监听pickedEvent被点击事件
+             *     Cesium目前无法返回拾取ES对象的id
+             *          
+             *  
+            */
+
+            // 鼠标click事件的时候,单独执行自己自定义的pick事件
+            viewer.clickEvent.don((e) => {
+                viewer.pick(e.screenPosition, 'customPick').then(res => {
+                    if (res.childPickedInfo.attachedInfo == 'customPick') {
+                        if (viewer.typeName == 'ESCzmViewer') {
+                            console.log("Ceisum引擎的Pick信息", res)
+                        }
+                        else if (viewer.typeName == 'ESUeViewer') {
+                            console.log("UE引擎的Pick信息")
+                        }
+                    }
+                })
+            })
+        })
+
+        // 创建Cesium视口
+        const viewer = objm.createCesiumViewer({
+            "domid": document.getElementById("app")
+        })
+        // 监听视口状态
+        viewer.statusChanged.don(status => {
+            if (status == 'Created') {
+                viewer.flyIn([116.39947309868032, 39.90592001431495, 334.38857241671485], [121.37477595297989, -33.67659827219708, 359.9997913701847], 3)
+            }
+        })
+
+        // 通过json创建一个影像图层
+        const imageryLayer = objm.createSceneObjectFromJson({
+            "id": "9812a65f-0de0-4f7b-b234-809c0c2fb8ef",
+            "type": "ESImageryLayer",
+            "url": "https://webmap.giiiis.com/maps/vt?lyrs=s&x={x}&y={y}&z={z}"
+        });
+
+        // 创建一个ESGltfModel对象
+        const { ESGltfModel } = XE2['esobjs-xe2-plugin-main']
+        const model = objm.createSceneObject(ESGltfModel)
+        model.position = [116.404, 39.904, 0]
+
+
+    </script>
+
+    <!-- 切换UE和Cesium引擎的组件（Vue） -->
+    <div id="root">
+        <switch-engine :objm="objm"></switch-engine>
+    </div>
+    <!-- Vue文件 -->
+    <script src="../../../../js/vue.global.js"></script>
+    <!-- 切换UE和Cesium的组件 -->
+    <script src="../../../../js/switchEngineCom.js"></script>
+</body>
+
+</html>
