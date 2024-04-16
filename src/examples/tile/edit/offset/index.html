@@ -36,6 +36,10 @@
             <label for="">偏移Y：</label><input id="offsety" type="number" value="0" onchange="changeOffsetY()">
             <label for="">偏移Z：</label><input id="offsetz" type="number" value="0" onchange="changeOffsetZ()">
         </div>
+        <h3>modelMatrix</h3>
+        <div>
+            <div id="modelMatrix" style="word-wrap: break-word;"></div>
+        </div>
     </div>
     <script>
         /** -----------------------------------------地球创建----------------------------------------------------**/
@@ -55,9 +59,9 @@
         window.viewer = viewer
         // 监听视口状态
         viewer.statusChanged.don(status => {
-            if (status == 'Created') {
-                viewer.flyIn([108.96610365677321, 34.206992091389814, 1040.7418042287602], [335.98922025235976, -25.906877001440748, 0.00022993478992045343], 3)
-            }
+            // if (status == 'Created') {
+            //     viewer.flyIn([108.96610365677321, 34.206992091389814, 1040.7418042287602], [335.98922025235976, -25.906877001440748, 0.00022993478992045343], 3)
+            // }
         })
         // 通过json创建一个影像图层
         const imageryLayer = objm.createSceneObjectFromJson({
@@ -74,7 +78,6 @@
             ES3DTileset
         } = XE2['esobjs-xe2-plugin-main']
         const sceneObject = objm.createSceneObject(ES3DTileset)
-        sceneObject.url =
         sceneObject.url = "https://image.giiiis.com/dayanta/tileset.json"
         // sceneObject.materialMode = 'technology'
         sceneObject.editing = true
@@ -86,6 +89,10 @@
                 document.getElementById("offsetx").value = val[0]
                 document.getElementById("offsety").value = val[1]
                 document.getElementById("offsetz").value = val[2]
+                const tans = Cesium.Matrix4.fromTranslation(
+                    new Cesium.Cartesian3(val[0], val[1], val[2]),
+                )
+                document.getElementById("modelMatrix").innerHTML = `[${Object.values(tans)}]`
             }
         })
 
