@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src="../../../../js/earthsdk.js"></script>
+    <!-- 面板的样式放到css文件内 -->
+    <link rel="stylesheet" href="../../../../css/example1.css">
+    <title>Cesium地球初始化</title>
+    <style>
+        html,
+        body,
+        #app {
+            width: 100%;
+            height: 100%;
+            margin: 0px;
+            padding: 0px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="app"></div>
+    <div id="panel">
+        <button onclick="toWalk()">第一人称模式</button>
+    </div>
+    <script>
+
+        // Vue中引入方式：import { ESObjectsManager } from 'esobjs-xe2-plugin/dist-node/esobjs-xe2-plugin-main';
+
+        const { ESObjectsManager } = XE2['esobjs-xe2-plugin-main']
+        const objm = new ESObjectsManager();
+        window.g_objm = objm;
+
+        // 创建Cesium视口
+        const viewer = objm.createCesiumViewer({
+            "domid": document.getElementById("app")
+        })
+        viewer.statusChanged.don(status => {
+            console.log(status)
+            if (status == "Created") {
+                objm.activeViewer.flyIn([
+                    109.60533379201799,
+                    18.533726319841456,
+                    3796.1047515254963
+                ], [
+                    355.14016420232184,
+                    -33.81201260919955,
+                    0.026583596819532502
+                ])
+            }
+        })
+
+        // 通过json创建一个影像图层
+        const imageryLayer = objm.createSceneObjectFromJson({
+            "id": "9812a65f-0de0-4f7b-b234-809c0c2fb8ef",
+            "type": "ESImageryLayer",
+            "url": "https://webmap.giiiis.com/maps/vt?lyrs=s&x={x}&y={y}&z={z}"
+        });
+
+        /**---------------------------------第一人称模式-----------------------------------**/
+        /**
+         * disposableOnce返回值是一个回调函数，调用该回调函数，自动取消监听
+         *1、通过disposableOnce方法监听点击事件
+         *2、将点击的位置传给changeToWalk方法
+        */
+        function toWalk() {
+            alert('请先在屏幕中点击一个位置')
+            const viewer = objm.activeViewer
+            viewer?.clickEvent.disposableOnce(async (e) => {
+                if (!e.screenPosition) return
+                const position = await viewer.pickPosition(e.screenPosition)
+                position[2] += 3
+                viewer.changeToWalk(position)
+            })
+
+        }
+    </script>
+    <!-- 切换UE和Cesium引擎的组件（Vue） -->
+    <div id="root">
+        <switch-engine :objm="objm"></switch-engine>
+    </div>
+    <!-- Vue文件 -->
+    <script src="../../../../js/vue.global.js"></script>
+    <!-- 切换UE和Cesium的组件 -->
+    <script src="../../../../js/switchEngineCom.js"></script>
+</body>
+
+</html>
