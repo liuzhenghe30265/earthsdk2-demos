@@ -1,8 +1,8 @@
 # 使用 xe2 调整 3dTileset 模型位置并获取模型矩阵 modelMatrix
 
-![]()
+![](https://p.ipic.vip/v9wkdj.png)
 
-[Demo]()
+[Demo](https://liuzhenghe30265.github.io/earthsdk2-demos/example.html?id=tile/edit/offset)
 
 ## 获取改变后的模型的 modelMatrix
 
